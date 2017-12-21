@@ -1,18 +1,26 @@
 package sample;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.chart.Axis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Line;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 
@@ -53,6 +61,11 @@ public class Car implements Initializable {
     private float ty;
     private float aa;
     private float ad;
+
+    private LineChartWithMarkers<Number, Number> distanceChart;
+    private LineChartWithMarkers<Number, Number> speedChart;
+    private float regionStart = 0;
+    private float regionEnd = 0;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -110,24 +123,54 @@ public class Car implements Initializable {
             }
         });
         sliderInit(this.ad, adSlider);
-        graphs.getChildren().addAll(getDistanceTimeChart(), getSpeedTimeChart());
+
+        initGraphs();
     }
 
     private void setV0(float v0) {
         this.v0 = v0 * 1000 / 3600;
     }
 
-    public LineChart getDistanceTimeChart() {
+    private void initGraphs(){
+
+        initDistanceGraph();
+        initSpeedGraph();
+
+        updateDistanceTimeChart();
+        updateSpeedTimeChart();
+
+        graphs.getChildren().addAll(distanceChart, speedChart);
+    }
+
+    private void initDistanceGraph(){
         //defining the axes
         final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Time");
         yAxis.setLabel("Distance");
         //creating the chart
-        final LineChart<Number, Number> lineChart =
-                new LineChart<Number, Number>(xAxis, yAxis);
+        distanceChart = new LineChartWithMarkers<>(xAxis, yAxis);
 
-        lineChart.setTitle("Distance Time diagram");
+        distanceChart.setTitle("Distance Time diagram");
+
+    }
+
+    private void initSpeedGraph(){
+        //defining the axes
+        final NumberAxis xAxis = new NumberAxis();
+        final NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("Time");
+        yAxis.setLabel("Speed");
+        //creating the chart
+        speedChart = new LineChartWithMarkers<>(xAxis, yAxis);
+
+        speedChart.setTitle("Speed Time diagram");
+    }
+
+    public boolean updateDistanceTimeChart() {
+
+        distanceChart.clear();
+
         //defining a series
         XYChart.Series series = new XYChart.Series();
         series.setName("Velocity");
@@ -136,9 +179,8 @@ public class Car implements Initializable {
         Boolean isAccelerating = isAccelerateSuggested();
         if (isAccelerating == null) {
             System.out.println("Impossible Case");
-            return null;
+            return false;
         }
-
 
         float t = 0;
         float v = v0;
@@ -148,42 +190,51 @@ public class Car implements Initializable {
             if (isAccelerating) {
                 v += aa * TIME_STEP;
                 d = (v0 * t) + ((aa * t * t) / 2);
-                series.getData().add(new XYChart.Data(t, d));
+                series.getData().add(new Data(t, d));
             } else {
                 v -= ad * TIME_STEP;
                 d = (v0 * t) - ((ad * t * t) / 2);
-                series.getData().add(new XYChart.Data(t, d));
+                series.getData().add(new Data(t, d));
             }
+
+            if(regionStart == 0 && d >= d0){
+                regionStart = t;
+            }
+
+            if(regionEnd == 0 && d >= d0 + l){
+                regionEnd = t;
+            }
+
             t += TIME_STEP;
         }
 
-        lineChart.getData().add(series);
+        distanceChart.getData().add(series);
+
+        Data<Number, Number> verticalMarker1 = new Data<>(regionStart, 0);
+        distanceChart.addVerticalValueMarker(verticalMarker1);
+
+        Data<Number, Number> verticalMarker2 = new Data<>(regionEnd, 0);
+        distanceChart.addVerticalValueMarker(verticalMarker2);
+
 
         //in loop take all series
-        for (XYChart.Series<Number, Number> s : lineChart.getData()) {
+//        for (XYChart.Series<Number, Number> s : distanceChart.getData()) {
+//
+//            //for all series, take date, each data has Node (symbol) for representing point
+//            for (Data<Number, Number> data : s.getData()) {
+//                // this node is StackPane
+//                StackPane stackPane = (StackPane) data.getNode();
+//                stackPane.setVisible(false);
+//            }
+//        }
 
-            //for all series, take date, each data has Node (symbol) for representing point
-            for (XYChart.Data<Number, Number> data : s.getData()) {
-                // this node is StackPane
-                StackPane stackPane = (StackPane) data.getNode();
-                stackPane.setVisible(false);
-            }
-        }
-
-        return lineChart;
+        return true;
     }
 
-    public LineChart getSpeedTimeChart() {
-        //defining the axes
-        final NumberAxis xAxis = new NumberAxis();
-        final NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Time");
-        yAxis.setLabel("Speed");
-        //creating the chart
-        final LineChart<Number, Number> lineChart =
-                new LineChart<Number, Number>(xAxis, yAxis);
+    public boolean updateSpeedTimeChart() {
 
-        lineChart.setTitle("Speed Time diagram");
+        speedChart.clear();
+
         //defining a series
         XYChart.Series series = new XYChart.Series();
         series.setName("Acceleration");
@@ -192,7 +243,7 @@ public class Car implements Initializable {
         Boolean isAccelerating = isAccelerateSuggested();
         if (isAccelerating == null) {
             System.out.println("Impossible Case");
-            return null;
+            return false;
         }
 
 
@@ -205,29 +256,35 @@ public class Car implements Initializable {
             if (isAccelerating) {
                 v += aa * TIME_STEP;
                 d = (v0 * t) + ((aa * t * t) / 2);
-                series.getData().add(new XYChart.Data(t, v));
+                series.getData().add(new Data(t, v));
             } else {
                 v -= ad * TIME_STEP;
                 d = (v0 * t) - ((ad * t * t) / 2);
-                series.getData().add(new XYChart.Data(t, v));
+                series.getData().add(new Data(t, v));
             }
             t += TIME_STEP;
         }
 
-        lineChart.getData().add(series);
+        speedChart.getData().add(series);
+
+        Data<Number, Number> verticalMarker1 = new Data<>(regionStart, 0);
+        speedChart.addVerticalValueMarker(verticalMarker1);
+
+        Data<Number, Number> verticalMarker2 = new Data<>(regionEnd, 0);
+        speedChart.addVerticalValueMarker(verticalMarker2);
 
         //in loop take all series
-        for (XYChart.Series<Number, Number> s : lineChart.getData()) {
+//        for (XYChart.Series<Number, Number> s : speedChart.getData()) {
+//
+//            //for all series, take date, each data has Node (symbol) for representing point
+//            for (Data<Number, Number> data : s.getData()) {
+//                // this node is StackPane
+//                StackPane stackPane = (StackPane) data.getNode();
+//                stackPane.setVisible(false);
+//            }
+//        }
 
-            //for all series, take date, each data has Node (symbol) for representing point
-            for (XYChart.Data<Number, Number> data : s.getData()) {
-                // this node is StackPane
-                StackPane stackPane = (StackPane) data.getNode();
-                stackPane.setVisible(false);
-            }
-        }
-
-        return lineChart;
+        return true;
     }
 
     private Boolean isAccelerateSuggested() {
@@ -261,7 +318,113 @@ public class Car implements Initializable {
     }
 
     private void updateGraphs(){
-        //karen
-        System.out.println("boobs");
+
+        regionStart = 0;
+        regionEnd = 0;
+
+        Boolean accelerationSuggested = isAccelerateSuggested();
+
+        if(accelerationSuggested == null){
+            result.setText("Impossible");
+            distanceChart.clear();
+            speedChart.clear();
+        }
+        else {
+            updateDistanceTimeChart();
+            updateSpeedTimeChart();
+            if (accelerationSuggested) {
+                result.setText("Accelerate");
+            } else {
+                result.setText("Decelerate");
+            }
+        }
+    }
+
+    private class LineChartWithMarkers<X,Y> extends LineChart {
+
+        private ObservableList<Data<X, Y>> horizontalMarkers;
+        private ObservableList<Data<X, Y>> verticalMarkers;
+
+        public LineChartWithMarkers(Axis<X> xAxis, Axis<Y> yAxis) {
+            super(xAxis, yAxis);
+            horizontalMarkers = FXCollections.observableArrayList(data -> new Observable[] {data.YValueProperty()});
+            horizontalMarkers.addListener((InvalidationListener) observable -> layoutPlotChildren());
+            verticalMarkers = FXCollections.observableArrayList(data -> new Observable[] {data.XValueProperty()});
+            verticalMarkers.addListener((InvalidationListener)observable -> layoutPlotChildren());
+        }
+
+        public void addHorizontalValueMarker(Data<X, Y> marker) {
+            Objects.requireNonNull(marker, "the marker must not be null");
+            if (horizontalMarkers.contains(marker)) return;
+            Line line = new Line();
+            marker.setNode(line );
+            getPlotChildren().add(line);
+            horizontalMarkers.add(marker);
+        }
+
+        public void removeHorizontalValueMarker(Data<X, Y> marker) {
+            Objects.requireNonNull(marker, "the marker must not be null");
+            if (marker.getNode() != null) {
+                getPlotChildren().remove(marker.getNode());
+                marker.setNode(null);
+            }
+            horizontalMarkers.remove(marker);
+        }
+
+        public void addVerticalValueMarker(Data<X, Y> marker) {
+            Objects.requireNonNull(marker, "the marker must not be null");
+            if (verticalMarkers.contains(marker)) return;
+            Line line = new Line();
+            marker.setNode(line );
+            getPlotChildren().add(line);
+            verticalMarkers.add(marker);
+        }
+
+        public void removeVerticalValueMarker(Data<X, Y> marker) {
+            Objects.requireNonNull(marker, "the marker must not be null");
+            if (marker.getNode() != null) {
+                getPlotChildren().remove(marker.getNode());
+                marker.setNode(null);
+            }
+            verticalMarkers.remove(marker);
+        }
+
+        public void clear(){
+            getData().clear();
+            for (Data<X, Y> marker: verticalMarkers) {
+                getPlotChildren().remove(marker.getNode());
+                marker.setNode(null);
+            }
+            for (Data<X, Y> marker: horizontalMarkers) {
+                getPlotChildren().remove(marker.getNode());
+                marker.setNode(null);
+            }
+
+            verticalMarkers.clear();
+            horizontalMarkers.clear();
+        }
+
+
+        @Override
+        protected void layoutPlotChildren() {
+            super.layoutPlotChildren();
+            for (Data<X, Y> horizontalMarker : horizontalMarkers) {
+                Line line = (Line) horizontalMarker.getNode();
+                line.setStartX(0);
+                line.setEndX(getBoundsInLocal().getWidth());
+                line.setStartY(getYAxis().getDisplayPosition(horizontalMarker.getYValue()) + 0.5); // 0.5 for crispness
+                line.setEndY(line.getStartY());
+                line.toFront();
+            }
+            for (Data<X, Y> verticalMarker : verticalMarkers) {
+                Line line = (Line) verticalMarker.getNode();
+                line.setStartX(getXAxis().getDisplayPosition(verticalMarker.getXValue()) + 0.5);  // 0.5 for crispness
+                line.setEndX(line.getStartX());
+                line.setStartY(0d);
+                line.setEndY(getBoundsInLocal().getHeight());
+                line.toFront();
+            }
+        }
+
     }
 }
