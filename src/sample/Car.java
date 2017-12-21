@@ -136,8 +136,7 @@ public class Car implements Initializable {
         initDistanceGraph();
         initSpeedGraph();
 
-        updateDistanceTimeChart();
-        updateSpeedTimeChart();
+        updateGraphs();
 
         graphs.getChildren().addAll(distanceChart, speedChart);
     }
