@@ -1,27 +1,175 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <SplitPane dividerPositions="0.4531772575250836" prefHeight="160.0" prefWidth="200.0">
-        <items>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+<SplitPane dividerPositions="0.5" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Car">
+    <items>
+        <AnchorPane fx:id="params" minHeight="0.0" minWidth="0.0">
+            <children>
+                <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="366.0">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="10.0" prefWidth="10.0">
+                            <children>
+                                <Label text="Initial Car Speed (kmh):">
+                                    <padding>
+                                        <Insets right="10.0" />
+                                    </padding>
+                           <font>
+                              <Font name="Nunito SemiBold" size="13.0" />
+                           </font>
+                                </Label>
+                                <Label fx:id="v0Label" alignment="CENTER_RIGHT">
+                           <font>
+                              <Font name="Nunito SemiBold" size="13.0" />
+                           </font></Label>
+                            </children>
+                        </HBox>
+                        <Slider fx:id="v0Slider" blockIncrement="0.0" majorTickUnit="10.0" max="80.0" min="20.0" minorTickCount="1" showTickLabels="true" showTickMarks="true">
+                            <padding>
+                                <Insets bottom="15.0" top="5.0" />
+                            </padding>
+                        </Slider>
+                        <HBox alignment="CENTER_LEFT" prefHeight="10.0" prefWidth="10.0">
+                            <children>
+                                <Label text="Initial Distance From Intersection (m):">
+                                    <padding>
+                                        <Insets right="10.0" />
+                                    </padding>
+                           <font>
+                              <Font name="Nunito SemiBold" size="13.0" />
+                           </font>
+                                </Label>
+                                <Label fx:id="d0Label" alignment="CENTER_RIGHT">
+                           <font>
+                              <Font name="Nunito SemiBold" size="13.0" />
+                           </font></Label>
+                            </children>
+                        </HBox>
+                        <Slider fx:id="d0Slider" blockIncrement="0.0" majorTickUnit="10.0" max="50.0" min="7.0" minorTickCount="1" showTickLabels="true" showTickMarks="true">
+                            <padding>
+                                <Insets bottom="15.0" top="5.0" />
+                            </padding>
+                        </Slider>
+                        <HBox alignment="CENTER_LEFT" prefHeight="10.0" prefWidth="10.0">
+                            <children>
+                                <Label text="Width of Intersection (m): ">
+                                    <padding>
+                                        <Insets right="10.0" />
+                                    </padding>
+                           <font>
+                              <Font name="Nunito SemiBold" size="13.0" />
+                           </font>
+                                </Label>
+                                <Label fx:id="lLabel" alignment="CENTER_RIGHT">
+                           <font>
+                              <Font name="Nunito SemiBold" size="13.0" />
+                           </font></Label>
+                            </children>
+                        </HBox>
+                        <Slider fx:id="lSlider" blockIncrement="0.0" majorTickUnit="10.0" max="50.0" min="7.0" minorTickCount="1" showTickLabels="true" showTickMarks="true">
+                            <padding>
+                                <Insets bottom="15.0" top="5.0" />
+                            </padding>
+                        </Slider>
+                        <HBox alignment="CENTER_LEFT" prefHeight="10.0" prefWidth="10.0">
+                            <children>
+                                <Label text="Duration of Yellow Light (s):">
+                                    <padding>
+                                        <Insets right="10.0" />
+                                    </padding>
+                           <font>
+                              <Font name="Nunito SemiBold" size="13.0" />
+                           </font>
+                                </Label>
+                                <Label fx:id="tyLabel" alignment="CENTER_RIGHT">
+                           <font>
+                              <Font name="Nunito SemiBold" size="13.0" />
+                           </font></Label>
+                            </children>
+                        </HBox>
+                        <Slider fx:id="tySlider" blockIncrement="0.0" majorTickUnit="1.0" max="4.0" min="2.0" minorTickCount="1" showTickLabels="true" showTickMarks="true">
+                            <padding>
+                                <Insets bottom="15.0" top="5.0" />
+                            </padding>
+                        </Slider>
+                        <HBox alignment="CENTER_LEFT" prefHeight="10.0" prefWidth="10.0">
+                            <children>
+                                <Label text="Acceleration (m/s^2):">
+                                    <padding>
+                                        <Insets right="10.0" />
+                                    </padding>
+                           <font>
+                              <Font name="Nunito SemiBold" size="13.0" />
+                           </font>
+                                </Label>
+                                <Label fx:id="aaLabel" alignment="CENTER_RIGHT">
+                           <font>
+                              <Font name="Nunito SemiBold" size="13.0" />
+                           </font></Label>
+                            </children>
+                        </HBox>
+                        <Slider fx:id="aaSlider" blockIncrement="0.0" majorTickUnit="1.0" max="3.0" min="1.0" minorTickCount="1" showTickLabels="true" showTickMarks="true">
+                            <padding>
+                                <Insets bottom="15.0" top="5.0" />
+                            </padding>
+                        </Slider>
+                        <HBox alignment="CENTER_LEFT" prefHeight="10.0" prefWidth="10.0">
+                            <children>
+                                <Label text="Deceleration (m/s^2):">
+                                    <padding>
+                                        <Insets right="10.0" />
+                                    </padding>
+                           <font>
+                              <Font name="Nunito SemiBold" size="13.0" />
+                           </font>
+                                </Label>
+                                <Label fx:id="adLabel" alignment="CENTER_RIGHT">
+                           <font>
+                              <Font name="Nunito SemiBold" size="13.0" />
+                           </font></Label>
+                            </children>
+                        </HBox>
+                        <Slider fx:id="adSlider" blockIncrement="0.0" majorTickUnit="1.0" max="3.0" min="1.0" minorTickCount="1" showTickLabels="true" showTickMarks="true">
+                            <padding>
+                                <Insets bottom="15.0" top="5.0" />
+                            </padding>
+                        </Slider>
+                    </children>
+                    <padding>
+                        <Insets left="25.0" right="50.0" top="25.0" />
+                    </padding>
+                    <opaqueInsets>
+                        <Insets />
+                    </opaqueInsets>
+                </VBox>
+            </children></AnchorPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="480.0" prefWidth="301.0">
+         <children>
+            <VBox alignment="TOP_CENTER">
                <children>
-                  <VBox prefHeight="200.0" prefWidth="100.0">
-                     <children>
-                        <Slider showTickLabels="true" />
-                        <Slider showTickLabels="true" />
-                     </children>
-                  </VBox>
+                  <Label fx:id="result" alignment="CENTER" text="RESULT">
+                     <padding>
+                        <Insets top="10.0" />
+                     </padding>
+                     <font>
+                        <Font name="Nunito SemiBold" size="34.0" />
+                     </font>
+                  </Label>
+                  <ScrollPane>
+                     <content>
+                        <VBox fx:id="graphs" />
+                     </content>
+                  </ScrollPane>
                </children>
-            </AnchorPane>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
-        </items>
-      </SplitPane>
-   </children>
-</StackPane>
+            </VBox>
+         </children></AnchorPane>
+    </items>
+</SplitPane>

@@ -10,14 +10,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-
         System.out.println("started...");
 
-        Car car = new Car(20, 50, 50, 4, 3, 3);
-
-//        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         primaryStage.setTitle("Project 1");
-        primaryStage.setScene(new Scene(car.getDistanceTimeChart(), 800, 600));
+//        primaryStage.setScene(new Scene(car.getDistanceTimeChart(), 800, 600));
+        primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.show();
     }
 
